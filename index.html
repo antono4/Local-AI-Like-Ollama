@@ -3,950 +3,687 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuralChat - AI Chat Interface</title>
+    <title>NeuralChat - Free AI Chat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
             --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
+            --bg-secondary: #111118;
             --bg-tertiary: #1a1a24;
-            --accent-primary: #00d4ff;
-            --accent-secondary: #7c3aed;
+            --accent: #00d4ff;
             --accent-glow: rgba(0, 212, 255, 0.2);
-            --accent-glow-strong: rgba(0, 212, 255, 0.4);
             --text-primary: #f0f0f5;
             --text-secondary: #8888a0;
-            --text-tertiary: #5a5a70;
+            --text-muted: #555566;
             --success: #10b981;
             --warning: #f59e0b;
             --error: #ef4444;
             --border: #2a2a3a;
-            --gradient-1: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-            --gradient-2: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
         }
-
-        html { scroll-behavior: smooth; }
+        
         body {
-            font-family: 'IBM Plex Sans', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
-
-        .bg-effects {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; overflow: hidden;
-        }
-        .bg-gradient {
-            position: absolute;
-            width: 150%; height: 150%;
-            top: -25%; left: -25%;
-            background: 
-                radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
-            animation: bgFloat 20s ease-in-out infinite;
-        }
-        @keyframes bgFloat {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(2%, 2%) rotate(1deg); }
-            66% { transform: translate(-2%, 1%) rotate(-1deg); }
-        }
-        .noise-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-        }
-
-        .app-container {
-            position: relative; z-index: 1;
-            display: flex; flex-direction: column; height: 100vh;
-            max-width: 1200px; margin: 0 auto; padding: 0 16px;
-        }
-
-        /* Header */
-        .header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0;
-        }
-        .logo {
-            display: flex; align-items: center; gap: 12px;
-        }
-        .logo-icon {
-            width: 40px; height: 40px;
-            background: var(--gradient-1);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .logo-icon svg { width: 24px; height: 24px; fill: white; }
-        .logo-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem; font-weight: 700;
-            background: var(--gradient-1);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .header-controls { display: flex; align-items: center; gap: 12px; }
-
-        /* Provider Selector */
-        .provider-tabs {
-            display: flex; gap: 4px;
+        
+        header {
             background: var(--bg-secondary);
-            padding: 4px; border-radius: 10px;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .provider-tab {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo span {
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
         }
-        .provider-tab:hover { color: var(--text-primary); }
-        .provider-tab.active {
-            background: var(--gradient-1);
-            color: white;
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--warning);
         }
-
-        /* Model Select */
-        .model-selector { position: relative; }
-        .model-select {
-            appearance: none;
+        
+        .status-dot.ready { background: var(--success); }
+        
+        .setup-panel {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 40px 10px 16px;
+            border-radius: 16px;
+            padding: 32px;
+            margin: 40px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .setup-panel.hidden { display: none; }
+        
+        .setup-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+        
+        .setup-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .setup-desc {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .setup-steps {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+        
+        .step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        
+        .step-num {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .step-text h4 { margin-bottom: 4px; }
+        .step-text p { font-size: 0.9rem; color: var(--text-secondary); }
+        .step-text a { color: var(--accent); text-decoration: none; }
+        .step-text a:hover { text-decoration: underline; }
+        
+        .api-input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             color: var(--text-primary);
-            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        
+        .api-input:focus { outline: none; border-color: var(--accent); }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            color: white;
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+        
+        .skip-link {
+            display: block;
+            margin-top: 16px;
+            color: var(--text-muted);
             font-size: 0.9rem;
             cursor: pointer;
-            min-width: 200px;
-            transition: all 0.2s ease;
         }
-        .model-select:hover { border-color: var(--accent-primary); }
-        .model-select:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
-        .model-selector::after {
-            content: ''; position: absolute; right: 16px; top: 50%;
-            transform: translateY(-50%);
-            border-left: 5px solid transparent; border-right: 5px solid transparent;
-            border-top: 5px solid var(--text-secondary); pointer-events: none;
-        }
-
-        /* Icon Button */
-        .icon-btn {
-            width: 40px; height: 40px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-        }
-        .icon-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
-        .icon-btn svg { width: 20px; height: 20px; }
-
-        /* API Key Section */
-        .api-key-section {
-            display: flex; align-items: center; gap: 8px;
-        }
-        .api-key-input {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            color: var(--text-primary);
-            font-size: 0.85rem;
-            width: 180px;
-            transition: all 0.2s ease;
-        }
-        .api-key-input:focus { outline: none; border-color: var(--accent-primary); }
-        .api-key-input::placeholder { color: var(--text-tertiary); }
-        .save-key-btn {
-            padding: 8px 12px;
-            background: var(--gradient-1);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .save-key-btn:hover { transform: translateY(-1px); }
-        .save-key-btn.saved { background: var(--success); }
-        .api-key-status { font-size: 0.8rem; margin-left: 8px; }
-        .api-key-status.configured { color: var(--success); }
-        .api-key-status.not-configured { color: var(--warning); }
-
-        /* Chat Area */
+        
+        .skip-link:hover { color: var(--text-secondary); }
+        
         .chat-area {
-            flex: 1; overflow-y: auto; padding: 24px 0;
-            scroll-behavior: smooth;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 24px;
         }
-        .chat-area::-webkit-scrollbar { width: 6px; }
-        .chat-area::-webkit-scrollbar-track { background: transparent; }
-        .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-        /* Welcome */
-        .welcome-container {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; height: 100%; text-align: center;
-            padding: 40px 20px;
+        
+        .chat-area.hidden { display: none; }
+        
+        .model-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
         }
-        .welcome-icon {
-            width: 80px; height: 80px;
-            background: var(--gradient-2);
+        
+        .model-select {
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 0;
+        }
+        
+        .message {
+            display: flex;
+            gap: 12px;
             margin-bottom: 24px;
-            animation: float 4s ease-in-out infinite;
+            animation: fadeIn 0.3s ease;
         }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .welcome-icon svg { width: 40px; height: 40px; stroke: var(--accent-primary); }
-        .welcome-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem; font-weight: 700; margin-bottom: 12px;
-            background: var(--gradient-1);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .welcome-subtitle {
-            color: var(--text-secondary);
-            font-size: 1rem; margin-bottom: 32px;
-            max-width: 500px;
-        }
-
-        /* Messages */
-        .messages-container { display: flex; flex-direction: column; gap: 20px; max-width: 900px; margin: 0 auto; }
-        .message { display: flex; gap: 12px; animation: messageSlide 0.3s ease; }
-        @keyframes messageSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .message.user { flex-direction: row-reverse; }
-        .message-avatar {
-            width: 36px; height: 36px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
         }
-        .message.user .message-avatar { background: var(--gradient-1); }
-        .message.assistant .message-avatar { background: var(--bg-tertiary); border: 1px solid var(--border); }
-        .message-avatar svg { width: 20px; height: 20px; }
-        .message.user .message-avatar svg { fill: white; }
-        .message.assistant .message-avatar svg { stroke: var(--accent-primary); }
-        .message-content {
-            max-width: 75%; padding: 14px 18px; border-radius: 16px; position: relative;
+        
+        .message.user .avatar { background: linear-gradient(135deg, var(--accent), #7c3aed); }
+        .message.assistant .avatar { background: var(--bg-tertiary); border: 1px solid var(--border); }
+        
+        .bubble {
+            max-width: 75%;
+            padding: 16px 20px;
+            border-radius: 16px;
+            line-height: 1.6;
         }
-        .message.user .message-content { background: var(--bg-tertiary); border: 1px solid var(--border); border-bottom-right-radius: 4px; }
-        .message.assistant .message-content { background: var(--gradient-2); border: 1px solid var(--border); border-left: 3px solid var(--accent-primary); border-bottom-left-radius: 4px; }
-        .message-text { line-height: 1.6; word-wrap: break-word; }
-        .message-text p { margin-bottom: 12px; }
-        .message-text p:last-child { margin-bottom: 0; }
-        .message-text code { font-family: 'JetBrains Mono', monospace; background: var(--bg-primary); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
-        .message-text pre { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; margin: 12px 0; position: relative; }
-        .message-text pre code { background: none; padding: 0; font-size: 0.85rem; line-height: 1.5; }
-        .message-time { font-size: 0.7rem; color: var(--text-tertiary); margin-top: 8px; display: block; }
-        .message.user .message-time { text-align: right; }
-
-        /* Typing */
-        .typing-indicator { display: flex; gap: 12px; animation: messageSlide 0.3s ease; }
-        .typing-dots { display: flex; gap: 4px; padding: 14px 18px; background: var(--gradient-2); border: 1px solid var(--border); border-left: 3px solid var(--accent-primary); border-radius: 16px; border-bottom-left-radius: 4px; }
-        .typing-dot { width: 8px; height: 8px; background: var(--accent-primary); border-radius: 50%; animation: typingBounce 1.4s ease-in-out infinite; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }
-
-        /* Input Area */
-        .input-area { padding: 16px 0 24px; flex-shrink: 0; }
-        .input-container { max-width: 900px; margin: 0 auto; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; padding: 4px; transition: all 0.2s ease; }
-        .input-container:focus-within { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-glow); }
-        .input-wrapper { display: flex; align-items: flex-end; gap: 12px; padding: 8px 12px; }
-        .chat-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-family: 'IBM Plex Sans', sans-serif; font-size: 1rem; resize: none; min-height: 24px; max-height: 150px; line-height: 1.5; }
-        .chat-input::placeholder { color: var(--text-tertiary); }
+        
+        .message.user .bubble {
+            background: var(--bg-tertiary);
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.assistant .bubble {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .bubble code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        
+        .bubble pre {
+            background: var(--bg-primary);
+            padding: 14px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .bubble pre code { background: none; padding: 0; }
+        
+        .typing {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+        
+        .welcome {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .welcome-icon { font-size: 80px; margin-bottom: 24px; }
+        .welcome h1 { font-size: 2rem; margin-bottom: 12px; background: linear-gradient(135deg, var(--accent), #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome p { color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
+        
+        .input-area {
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+        }
+        
+        .input-wrap {
+            display: flex;
+            gap: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 6px;
+            transition: border-color 0.2s;
+        }
+        
+        .input-wrap:focus-within { border-color: var(--accent); }
+        
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            padding: 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: none;
+            min-height: 24px;
+            max-height: 150px;
+        }
+        
+        .chat-input::placeholder { color: var(--text-muted); }
         .chat-input:focus { outline: none; }
-        .send-btn { width: 44px; height: 44px; background: var(--gradient-1); border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
-        .send-btn:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 0 20px var(--accent-glow-strong); }
-        .send-btn:active:not(:disabled) { transform: scale(0.95); }
+        
+        .send-btn {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .send-btn:hover:not(:disabled) { transform: scale(1.05); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .send-btn svg { width: 20px; height: 20px; fill: white; }
-        .input-hint { display: flex; justify-content: space-between; padding: 8px 16px; font-size: 0.75rem; color: var(--text-tertiary); }
-
-        /* Error Banner */
-        .error-banner {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--error); color: white; padding: 12px 24px;
-            border-radius: 8px; font-size: 0.9rem; z-index: 200;
-            display: flex; align-items: center; gap: 12px;
-            animation: slideDown 0.3s ease;
+        .send-btn svg { width: 24px; height: 24px; fill: white; }
+        
+        .error-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--error);
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            z-index: 100;
+            animation: slideUp 0.3s ease;
         }
-        @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-        .error-banner.hidden { display: none; }
-        .error-banner button { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-        .error-banner button:hover { background: rgba(255, 255, 255, 0.3); }
-
-        /* Settings Panel */
-        .settings-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
-            z-index: 100; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
-        .settings-overlay.active { opacity: 1; visibility: visible; }
-        .settings-panel {
-            position: fixed; top: 0; right: -400px; width: 400px; max-width: 100%;
-            height: 100%; background: var(--bg-secondary); border-left: 1px solid var(--border);
-            z-index: 101; transition: right 0.3s ease;
-            display: flex; flex-direction: column;
+        
+        @media (max-width: 600px) {
+            .setup-panel { margin: 20px; padding: 24px; }
+            .bubble { max-width: 85%; }
+            .welcome h1 { font-size: 1.5rem; }
         }
-        .settings-overlay.active .settings-panel { right: 0; }
-        .settings-header { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--border); }
-        .settings-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 600; }
-        .close-settings { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s ease; }
-        .close-settings:hover { background: var(--bg-tertiary); color: var(--text-primary); }
-        .close-settings svg { width: 24px; height: 24px; }
-        .settings-content { flex: 1; overflow-y: auto; padding: 20px; }
-        .setting-group { margin-bottom: 24px; }
-        .setting-label { display: block; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
-        .setting-description { font-size: 0.8rem; color: var(--text-tertiary); margin-bottom: 12px; }
-        .slider-container { display: flex; align-items: center; gap: 12px; }
-        .slider { flex: 1; -webkit-appearance: none; appearance: none; height: 6px; background: var(--bg-tertiary); border-radius: 3px; cursor: pointer; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; background: var(--gradient-1); border-radius: 50%; cursor: pointer; transition: transform 0.2s ease; }
-        .slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
-        .slider-value { min-width: 40px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--accent-primary); }
-        .system-prompt-textarea { width: 100%; min-height: 120px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text-primary); font-family: 'IBM Plex Sans', sans-serif; font-size: 0.9rem; resize: vertical; transition: border-color 0.2s ease; }
-        .system-prompt-textarea:focus { outline: none; border-color: var(--accent-primary); }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header { flex-wrap: wrap; gap: 12px; }
-            .logo-text { font-size: 1.25rem; }
-            .provider-tabs { flex-wrap: wrap; }
-            .api-key-input { width: 120px; }
-            .model-select { min-width: 150px; }
-            .message-content { max-width: 85%; }
-            .welcome-title { font-size: 1.5rem; }
-        }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="bg-effects">
-        <div class="bg-gradient"></div>
-        <div class="noise-overlay"></div>
-    </div>
-
-    <div class="error-banner hidden" id="errorBanner">
-        <span id="errorMessage">Connection error</span>
-        <button onclick="document.getElementById('errorBanner').classList.add('hidden')">Dismiss</button>
-    </div>
-
-    <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings(event)">
-        <div class="settings-panel" onclick="event.stopPropagation()">
-            <div class="settings-header">
-                <h2 class="settings-title">Settings</h2>
-                <button class="close-settings" onclick="closeSettings()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">🧠</div>
+            <span>NeuralChat</span>
+        </div>
+        <div class="status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Not configured</span>
+        </div>
+    </header>
+    
+    <!-- Setup Panel -->
+    <div class="setup-panel" id="setupPanel">
+        <div class="setup-icon">🔑</div>
+        <h1 class="setup-title">Setup Gemini API Key</h1>
+        <p class="setup-desc">Get your free API key to start chatting with AI. No credit card required!</p>
+        
+        <div class="setup-steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-text">
+                    <h4>Get Free API Key</h4>
+                    <p>Visit <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a> and sign in with Google.</p>
+                </div>
             </div>
-            <div class="settings-content">
-                <div class="setting-group">
-                    <label class="setting-label">Temperature</label>
-                    <p class="setting-description">Controls randomness. Lower = more focused, Higher = more creative.</p>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="temperatureSlider" min="0" max="2" step="0.1" value="0.7">
-                        <span class="slider-value" id="temperatureValue">0.7</span>
-                    </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-text">
+                    <h4>Create API Key</h4>
+                    <p>Click "Create API Key" and copy the generated key.</p>
                 </div>
-                <div class="setting-group">
-                    <label class="setting-label">Max Tokens</label>
-                    <p class="setting-description">Maximum response length.</p>
-                    <div class="slider-container">
-                        <input type="range" class="slider" id="maxTokensSlider" min="256" max="8192" step="256" value="2048">
-                        <span class="slider-value" id="maxTokensValue">2048</span>
-                    </div>
-                </div>
-                <div class="setting-group">
-                    <label class="setting-label">System Prompt</label>
-                    <p class="setting-description">Instructions for AI behavior.</p>
-                    <textarea class="system-prompt-textarea" id="systemPrompt" placeholder="You are a helpful assistant...">You are Neural, a helpful AI assistant.</textarea>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-text">
+                    <h4>Paste Below</h4>
+                    <p>Paste your API key and click "Start Chatting".</p>
                 </div>
             </div>
         </div>
+        
+        <input type="password" class="api-input" id="apiKeyInput" placeholder="Paste your Gemini API key here...">
+        <button class="btn btn-primary" onclick="saveKey()">🚀 Start Chatting</button>
+        <span class="skip-link" onclick="useLocal()">Use Local Ollama instead →</span>
     </div>
-
-    <div class="app-container">
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                </div>
-                <span class="logo-text">NeuralChat</span>
-            </div>
-
-            <div class="header-controls">
-                <div class="provider-tabs">
-                    <button class="provider-tab active" data-provider="gemini" onclick="switchProvider('gemini')">Gemini ⭐</button>
-                    <button class="provider-tab" data-provider="groq" onclick="switchProvider('groq')">Groq</button>
-                    <button class="provider-tab" data-provider="openai" onclick="switchProvider('openai')">OpenAI</button>
-                    <button class="provider-tab" data-provider="anthropic" onclick="switchProvider('anthropic')">Claude</button>
-                    <button class="provider-tab" data-provider="cohere" onclick="switchProvider('cohere')">Cohere</button>
-                    <button class="provider-tab" data-provider="ollama" onclick="switchProvider('ollama')">Local</button>
-                </div>
-
-                <div class="model-selector">
-                    <select class="model-select" id="modelSelect">
-                        <option value="">Select model...</option>
-                    </select>
-                </div>
-
-                <div class="api-key-section">
-                    <input type="password" class="api-key-input" id="apiKeyInput" placeholder="API Key..." onkeydown="if(event.key==='Enter')saveApiKey()">
-                    <button class="save-key-btn" id="saveKeyBtn" onclick="saveApiKey()">Save</button>
-                    <span class="api-key-status" id="apiKeyStatus"></span>
-                </div>
-
-                <button class="icon-btn" onclick="clearChat()" title="Clear Chat">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                </button>
-
-                <button class="icon-btn" onclick="openSettings()" title="Settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-                </button>
-            </div>
-        </header>
-
-        <main class="chat-area" id="chatArea">
-            <div class="welcome-container" id="welcomeContainer">
-                <div class="welcome-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2H10a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><path d="M10 21h4M12 17v4"/></svg>
-                </div>
-                <h1 class="welcome-title">Welcome to NeuralChat</h1>
-                <p class="welcome-subtitle">Your AI assistant powered by cloud models. Select a provider, enter your API key, and start chatting!</p>
-            </div>
-            <div class="messages-container hidden" id="messagesContainer"></div>
-        </main>
-
+    
+    <!-- Chat Area -->
+    <div class="chat-area hidden" id="chatArea">
+        <div class="model-bar">
+            <span>Model: <select class="model-select" id="modelSelect">
+                <option value="gemini-1.5-flash">gemini-1.5-flash ⭐</option>
+                <option value="gemini-1.5-flash-8b">gemini-1.5-flash-8b</option>
+                <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+            </select></span>
+            <span id="tokenInfo"></span>
+        </div>
+        
+        <div class="messages" id="messages"></div>
+        
         <div class="input-area">
-            <div class="input-container">
-                <div class="input-wrapper">
-                    <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1" onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
-                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
-                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                    </button>
-                </div>
-                <div class="input-hint">
-                    <span>Enter to send, Shift+Enter for new line</span>
-                    <span id="modelInfo">No model selected</span>
-                </div>
+            <div class="input-wrap">
+                <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="send()" disabled>
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // State
-        let messages = [];
-        let currentProvider = 'openai';
-        let currentModel = '';
-        let isGenerating = false;
-
-        // Provider configurations
-        const PROVIDERS = {
-            gemini: {
-                name: 'Gemini',
-                models: [
-                    'gemini-1.5-flash',
-                    'gemini-1.5-flash-8b', 
-                    'gemini-1.5-pro',
-                    'gemini-2.0-flash',
-                    'gemini-pro'
-                ],
-                endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
-                keyName: 'GEMINI_API_KEY'
-            },
-            groq: {
-                name: 'Groq',
-                models: ['llama-3.1-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'gemma2-9b-it'],
-                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-                keyName: 'GROQ_API_KEY'
-            },
-            openai: {
-                name: 'OpenAI',
-                models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'],
-                endpoint: 'https://api.openai.com/v1/chat/completions',
-                keyName: 'OPENAI_API_KEY'
-            },
-            anthropic: {
-                name: 'Claude',
-                models: ['claude-opus-4-20240229', 'claude-sonnet-4-20250514', 'claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku'],
-                endpoint: 'https://api.anthropic.com/v1/messages',
-                keyName: 'ANTHROPIC_API_KEY'
-            },
-            cohere: {
-                name: 'Cohere',
-                models: ['command-r-plus', 'command-r', 'command', 'command-light'],
-                endpoint: 'https://api.cohere.ai/v1/chat',
-                keyName: 'COHERE_API_KEY'
-            },
-            ollama: {
-                name: 'Local Ollama',
-                models: ['llama3.2', 'llama3.2:1b', 'mistral', 'codellama', 'phi3', 'gemma2:2b', 'qwen2.5:7b'],
-                endpoint: 'http://localhost:11434/api/chat',
-                keyName: null
+        const messages = [];
+        let model = 'gemini-1.5-flash';
+        let generating = false;
+        let tokens = 0;
+        let localMode = false;
+        
+        const $ = id => document.getElementById(id);
+        
+        function init() {
+            if (localStorage.getItem('GEMINI_API_KEY')) {
+                showChat();
             }
-        };
-
-        // DOM Elements
-        const chatArea = document.getElementById('chatArea');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const modelSelect = document.getElementById('modelSelect');
-        const welcomeContainer = document.getElementById('welcomeContainer');
-        const messagesContainer = document.getElementById('messagesContainer');
-        const errorBanner = document.getElementById('errorBanner');
-        const errorMessage = document.getElementById('errorMessage');
-        const settingsOverlay = document.getElementById('settingsOverlay');
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSettings();
-            loadApiKeys();
-            updateModelSelect();
-        });
-
-        function loadSettings() {
-            const settings = JSON.parse(localStorage.getItem('neuralchat_settings') || '{}');
-            document.getElementById('temperatureSlider').value = settings.temperature || 0.7;
-            document.getElementById('temperatureValue').textContent = settings.temperature || 0.7;
-            document.getElementById('maxTokensSlider').value = settings.maxTokens || 2048;
-            document.getElementById('maxTokensValue').textContent = settings.maxTokens || 2048;
-            document.getElementById('systemPrompt').value = settings.systemPrompt || 'You are Neural, a helpful AI assistant.';
-
-            document.getElementById('temperatureSlider').addEventListener('input', (e) => {
-                document.getElementById('temperatureValue').textContent = e.target.value;
-                saveSettings();
-            });
-            document.getElementById('maxTokensSlider').addEventListener('input', (e) => {
-                document.getElementById('maxTokensValue').textContent = e.target.value;
-                saveSettings();
-            });
-            document.getElementById('systemPrompt').addEventListener('input', saveSettings);
-        }
-
-        function saveSettings() {
-            const settings = {
-                temperature: parseFloat(document.getElementById('temperatureSlider').value),
-                maxTokens: parseInt(document.getElementById('maxTokensSlider').value),
-                systemPrompt: document.getElementById('systemPrompt').value
-            };
-            localStorage.setItem('neuralchat_settings', JSON.stringify(settings));
-        }
-
-        function loadApiKeys() {
-            Object.keys(PROVIDERS).forEach(provider => {
-                const keyName = PROVIDERS[provider].keyName;
-                if (keyName) {
-                    const savedKey = localStorage.getItem(keyName);
-                    if (savedKey) {
-                        document.getElementById('apiKeyInput').value = savedKey;
-                        document.getElementById('apiKeyInput').dataset.provider = provider;
-                    }
-                }
-            });
-        }
-
-        function saveApiKey() {
-            const input = document.getElementById('apiKeyInput');
-            const key = input.value.trim();
-            const btn = document.getElementById('saveKeyBtn');
-
-            if (!key) return;
-
-            const provider = currentProvider;
-            const keyName = PROVIDERS[provider].keyName;
-
-            if (keyName) {
-                localStorage.setItem(keyName, key);
-                input.value = '';
-                btn.textContent = 'Saved!';
-                btn.classList.add('saved');
-                updateApiKeyStatus();
-                setTimeout(() => {
-                    btn.textContent = 'Save';
-                    btn.classList.remove('saved');
-                }, 2000);
-            }
-        }
-
-        function switchProvider(provider) {
-            currentProvider = provider;
-            document.querySelectorAll('.provider-tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.provider === provider);
-            });
-            updateModelSelect();
-            updateApiKeyStatus();
-
-            // Show/hide API key input
-            const apiKeySection = document.querySelector('.api-key-section');
-            const needsKey = PROVIDERS[provider].keyName !== null;
-            apiKeySection.style.display = needsKey ? 'flex' : 'none';
-        }
-
-        function updateModelSelect() {
-            const models = PROVIDERS[currentProvider].models;
-            modelSelect.innerHTML = models.map(m => `<option value="${m}">${m}</option>`).join('');
-            currentModel = models[0];
-            updateModelInfo();
-        }
-
-        function updateModelInfo() {
-            const modelInfo = document.getElementById('modelInfo');
-            if (currentModel) {
-                modelInfo.textContent = `${PROVIDERS[currentProvider].name}: ${currentModel}`;
-            } else {
-                modelInfo.textContent = 'No model selected';
-            }
-            updateApiKeyStatus();
-        }
-
-        function updateApiKeyStatus() {
-            const status = document.getElementById('apiKeyStatus');
-            const provider = PROVIDERS[currentProvider];
             
-            if (!provider.keyName) {
-                status.textContent = '(No key needed)';
-                status.className = 'api-key-status configured';
+            $('chatInput').addEventListener('input', e => {
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 150) + 'px';
+                $('sendBtn').disabled = !e.target.value.trim() || generating;
+            });
+            
+            $('modelSelect').addEventListener('change', e => {
+                model = e.target.value;
+                saveChat();
+            });
+        }
+        
+        function saveKey() {
+            const key = $('apiKeyInput').value.trim();
+            if (!key) {
+                showError('Please enter your API key');
+                return;
+            }
+            localStorage.setItem('GEMINI_API_KEY', key);
+            localMode = false;
+            $('modelSelect').innerHTML = `
+                <option value="gemini-1.5-flash">gemini-1.5-flash ⭐</option>
+                <option value="gemini-1.5-flash-8b">gemini-1.5-flash-8b</option>
+                <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+            `;
+            showChat();
+        }
+        
+        function useLocal() {
+            localMode = true;
+            $('modelSelect').innerHTML = '<option value="local">llama3.2 (Local)</option>';
+            showChat();
+        }
+        
+        function showChat() {
+            $('setupPanel').classList.add('hidden');
+            $('chatArea').classList.remove('hidden');
+            $('statusDot').classList.add('ready');
+            $('statusText').textContent = localMode ? 'Local Mode' : 'Ready';
+            loadChat();
+        }
+        
+        async function send() {
+            const input = $('chatInput');
+            const content = input.value.trim();
+            if (!content || generating) return;
+            
+            if (!localMode && !localStorage.getItem('GEMINI_API_KEY')) {
+                showError('Please configure API key first');
                 return;
             }
             
-            const hasKey = localStorage.getItem(provider.keyName);
-            if (hasKey) {
-                status.textContent = '✓ Configured';
-                status.className = 'api-key-status configured';
-            } else {
-                status.textContent = '⚠️ Key needed';
-                status.className = 'api-key-status not-configured';
-            }
-        }
-
-        modelSelect.addEventListener('change', (e) => {
-            currentModel = e.target.value;
-            updateModelInfo();
-        });
-
-        function handleKeyDown(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
-        }
-
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
-            sendBtn.disabled = textarea.value.trim() === '' || !currentModel || isGenerating;
-        }
-
-        async function sendMessage() {
-            const content = chatInput.value.trim();
-            if (!content || !currentModel || isGenerating) {
-                if (!currentModel) {
-                    showError('Please select a model first. Go to Settings > API Key to configure.');
-                }
-                return;
-            }
-
-            // Check for API key
-            const provider = PROVIDERS[currentProvider];
-            if (provider.keyName && !localStorage.getItem(provider.keyName)) {
-                showError(`Please enter your ${provider.name} API key. Click "Save" next to the API key field.`);
-                return;
-            }
-
-            welcomeContainer.classList.add('hidden');
-            messagesContainer.classList.remove('hidden');
-
-            const userMessage = { role: 'user', content, timestamp: new Date().toISOString() };
-            messages.push(userMessage);
-            renderMessage(userMessage, 'user');
-
-            chatInput.value = '';
-            autoResize(chatInput);
-            sendBtn.disabled = true;
-
-            showTypingIndicator();
-
-            const aiMessage = { role: 'assistant', content: '', timestamp: new Date().toISOString() };
-
+            messages.push({ role: 'user', content });
+            render(content, 'user');
+            input.value = '';
+            input.style.height = 'auto';
+            generating = true;
+            $('sendBtn').disabled = true;
+            
+            showTyping();
+            
             try {
-                const response = await callAPI(content);
-                hideTypingIndicator();
-
-                if (response.error) {
-                    throw new Error(response.error);
-                }
-
-                aiMessage.content = response.content;
-            } catch (error) {
-                hideTypingIndicator();
-                showError(error.message || 'Failed to get response. Please check your API key and try again.');
-                aiMessage.content = `❌ Error: ${error.message}`;
+                const res = await (localMode ? callLocal(content) : callGemini(content));
+                hideTyping();
+                
+                if (res.error) throw new Error(res.error);
+                
+                messages.push({ role: 'assistant', content: res.content });
+                render(res.content, 'assistant');
+                tokens += Math.ceil(content.length / 4) + Math.ceil(res.content.length / 4);
+                $('tokenInfo').textContent = `~${tokens.toLocaleString()} tokens`;
+                
+            } catch (err) {
+                hideTyping();
+                showError(err.message);
+                render(`❌ Error: ${err.message}`, 'assistant');
             }
-
-            messages.push(aiMessage);
-            renderMessage(aiMessage, 'assistant');
-            saveConversation();
+            
+            generating = false;
+            $('sendBtn').disabled = !input.value.trim();
+            saveChat();
+            scrollBottom();
         }
-
-        async function callAPI(userContent) {
-            const settings = JSON.parse(localStorage.getItem('neuralchat_settings') || '{}');
-            const systemPrompt = settings.systemPrompt || 'You are Neural, a helpful AI assistant.';
-            const temperature = settings.temperature || 0.7;
-            const maxTokens = settings.maxTokens || 2048;
-
-            if (currentProvider === 'ollama') {
-                return callOllama(userContent, systemPrompt, temperature, maxTokens);
-            } else if (currentProvider === 'anthropic') {
-                return callAnthropic(userContent, systemPrompt, temperature, maxTokens);
-            } else if (currentProvider === 'gemini') {
-                return callGemini(userContent, systemPrompt, temperature, maxTokens);
-            } else {
-                return callOpenAICompatible(userContent, systemPrompt, temperature, maxTokens);
-            }
-        }
-
-        async function callOllama(userContent, systemPrompt, temperature, maxTokens) {
-            const conversation = messages.filter(m => m.role !== 'system').map(m => ({
-                role: m.role,
-                content: m.content
-            }));
-
-            const response = await fetch(PROVIDERS.ollama.endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: currentModel,
-                    messages: [{ role: 'system', content: systemPrompt }, ...conversation],
-                    stream: false
-                })
-            });
-
-            if (!response.ok) throw new Error('Ollama not available. Make sure Ollama is running.');
-
-            const data = await response.json();
-            return { content: data.message?.content || 'No response' };
-        }
-
-        async function callAnthropic(userContent, systemPrompt, temperature, maxTokens) {
-            const apiKey = localStorage.getItem('ANTHROPIC_API_KEY');
-            if (!apiKey) throw new Error('Please enter your Anthropic API key');
-
-            const conversation = messages.filter(m => m.role !== 'system').map(m => ({
-                role: m.role === 'assistant' ? 'assistant' : 'user',
-                content: m.content
-            }));
-
-            const response = await fetch(PROVIDERS.anthropic.endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey,
-                    'anthropic-version': '2023-06-01',
-                    'anthropic-dangerous-direct-browser-access': 'true'
-                },
-                body: JSON.stringify({
-                    model: currentModel,
-                    max_tokens: maxTokens,
-                    system: systemPrompt,
-                    messages: [...conversation, { role: 'user', content: userContent }]
-                })
-            });
-
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error?.message || 'API request failed');
-            }
-
-            const data = await response.json();
-            return { content: data.content?.[0]?.text || 'No response' };
-        }
-
-        async function callGemini(userContent, systemPrompt, temperature, maxTokens) {
-            const apiKey = localStorage.getItem('GEMINI_API_KEY');
-            if (!apiKey) throw new Error('Please enter your Gemini API key. Go to https://aistudio.google.com/apikey');
-
-            const conversation = messages.filter(m => m.role !== 'system').map(m => ({
-                role: m.role === 'assistant' ? 'model' : 'user',
+        
+        async function callGemini(userMsg) {
+            const key = localStorage.getItem('GEMINI_API_KEY');
+            const history = messages.slice(-20).filter(m => m.role !== 'system').map(m => ({
+                role: m.role === 'user' ? 'user' : 'model',
                 parts: [{ text: m.content }]
             }));
-
-            const contents = [...conversation, { role: 'user', parts: [{ text: userContent }] }];
-
-            const endpoint = `${PROVIDERS.gemini.endpoint}/${currentModel}:generateContent?key=${apiKey}`;
-
-            const response = await fetch(endpoint, {
+            
+            const res = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [...history, { role: 'user', parts: [{ text: userMsg }] }] })
+                }
+            );
+            
+            if (!res.ok) {
+                const err = await res.json();
+                const msg = err?.error?.message || 'API Error';
+                if (msg.includes('API_KEY')) throw new Error('Invalid API Key. Get new one at aistudio.google.com/apikey');
+                if (msg.includes('quota')) throw new Error('Quota exceeded. Try again later.');
+                throw new Error(msg);
+            }
+            
+            const data = await res.json();
+            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) throw new Error('Empty response');
+            
+            return { content: text };
+        }
+        
+        async function callLocal(msg) {
+            const res = await fetch('http://localhost:11434/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents,
-                    generationConfig: {
-                        temperature,
-                        maxOutputTokens: maxTokens
-                    }
-                })
+                body: JSON.stringify({ model: 'llama3.2', messages, stream: false })
             });
-
-            if (!response.ok) {
-                const err = await response.json();
-                let errorMsg = 'API request failed';
-                
-                if (err.error) {
-                    if (err.error.message.includes('API key not valid')) {
-                        errorMsg = 'Invalid API Key. Please get a new key from https://aistudio.google.com/apikey';
-                    } else if (err.error.message.includes('quota')) {
-                        errorMsg = 'API quota exceeded. Please try again later or get a new API key.';
-                    } else if (err.error.message.includes('model')) {
-                        errorMsg = `Model "${currentModel}" not available. Please select a different model.`;
-                    } else {
-                        errorMsg = err.error.message;
-                    }
+            
+            if (!res.ok) throw new Error('Ollama not running. Make sure Ollama is installed and running.');
+            
+            const data = await res.json();
+            return { content: data.message?.content || 'No response' };
+        }
+        
+        function render(text, role) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            div.innerHTML = `
+                <div class="avatar">${role === 'user' ? '👤' : '🤖'}</div>
+                <div class="bubble">${format(text)}</div>
+            `;
+            $('messages').appendChild(div);
+            scrollBottom();
+        }
+        
+        function showTyping() {
+            const div = document.createElement('div');
+            div.className = 'message assistant';
+            div.id = 'typing';
+            div.innerHTML = `
+                <div class="avatar">🤖</div>
+                <div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            `;
+            $('messages').appendChild(div);
+            scrollBottom();
+        }
+        
+        function hideTyping() {
+            $('typing')?.remove();
+        }
+        
+        function format(text) {
+            let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+        
+        function scrollBottom() {
+            $('messages').scrollTop = $('messages').scrollHeight;
+        }
+        
+        function showError(msg) {
+            const existing = document.querySelector('.error-toast');
+            existing?.remove();
+            
+            const div = document.createElement('div');
+            div.className = 'error-toast';
+            div.textContent = msg;
+            document.body.appendChild(div);
+            
+            setTimeout(() => div.remove(), 8000);
+        }
+        
+        function saveChat() {
+            localStorage.setItem('neuralchat', JSON.stringify(messages));
+        }
+        
+        function loadChat() {
+            const saved = localStorage.getItem('neuralchat');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.length) {
+                    data.forEach(m => {
+                        messages.push(m);
+                        render(m.content, m.role === 'user' ? 'user' : 'assistant');
+                    });
                 }
-                throw new Error(errorMsg);
-            }
-
-            const data = await response.json();
-            
-            if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-                throw new Error('Invalid response from Gemini. Please try again.');
-            }
-            
-            return { content: data.candidates[0].content.parts[0].text };
-        }
-
-        async function callOpenAICompatible(userContent, systemPrompt, temperature, maxTokens) {
-            const keyName = PROVIDERS[currentProvider].keyName;
-            const apiKey = localStorage.getItem(keyName);
-            if (!apiKey) throw new Error(`Please enter your ${PROVIDERS[currentProvider].name} API key`);
-
-            const conversation = messages.filter(m => m.role !== 'system').map(m => ({
-                role: m.role,
-                content: m.content
-            }));
-
-            let endpoint = PROVIDERS[currentProvider].endpoint;
-            let body = {
-                model: currentModel,
-                messages: [{ role: 'system', content: systemPrompt }, ...conversation],
-                temperature,
-                max_tokens: maxTokens
-            };
-
-            // Groq and others use OpenAI-compatible format
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error?.message || 'API request failed');
-            }
-
-            const data = await response.json();
-            return { content: data.choices?.[0]?.message?.content || 'No response' };
-        }
-
-        function renderMessage(message, type) {
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${type}`;
-
-            const avatarSvg = type === 'user'
-                ? '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'
-                : '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2H10a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><path d="M10 21h4M12 17v4"/></svg>';
-
-            const time = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            messageElement.innerHTML = `
-                <div class="message-avatar">${avatarSvg}</div>
-                <div class="message-content">
-                    <div class="message-text">${formatMarkdown(message.content)}</div>
-                    <span class="message-time">${time}</span>
-                </div>
-            `;
-
-            messagesContainer.appendChild(messageElement);
-            scrollToBottom();
-        }
-
-        function showTypingIndicator() {
-            isGenerating = true;
-            sendBtn.disabled = true;
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.id = 'typingIndicator';
-            indicator.innerHTML = `
-                <div class="message-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2H10a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/></svg></div>
-                <div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
-            `;
-            messagesContainer.appendChild(indicator);
-            scrollToBottom();
-        }
-
-        function hideTypingIndicator() {
-            isGenerating = false;
-            sendBtn.disabled = chatInput.value.trim() === '' || !currentModel;
-            document.getElementById('typingIndicator')?.remove();
-        }
-
-        function scrollToBottom() { chatArea.scrollTop = chatArea.scrollHeight; }
-
-        function formatMarkdown(text) {
-            if (!text) return '';
-            let formatted = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            formatted = formatted.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-            formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-            formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            formatted = formatted.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-            formatted = formatted.replace(/\n/g, '<br>');
-            return formatted;
-        }
-
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorBanner.classList.remove('hidden');
-        }
-
-        function saveConversation() { localStorage.setItem('neuralchat_conversation', JSON.stringify(messages)); }
-
-        function loadConversation() {
-            const saved = localStorage.getItem('neuralchat_conversation');
-            if (saved && messages.length === 0) {
-                messages = JSON.parse(saved);
-                welcomeContainer.classList.add('hidden');
-                messagesContainer.classList.remove('hidden');
-                messages.forEach(msg => renderMessage(msg, msg.role === 'user' ? 'user' : 'assistant'));
             }
         }
-
-        function clearChat() {
-            if (messages.length > 0 && !confirm('Clear all messages?')) return;
-            messages = [];
-            messagesContainer.innerHTML = '';
-            messagesContainer.classList.add('hidden');
-            welcomeContainer.classList.remove('hidden');
-            localStorage.removeItem('neuralchat_conversation');
-        }
-
-        function openSettings() { settingsOverlay.classList.add('active'); }
-        function closeSettings(event) { if (event && event.target !== settingsOverlay) return; settingsOverlay.classList.remove('active'); }
-
-        loadConversation();
+        
+        init();
     </script>
 </body>
 </html>
