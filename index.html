@@ -182,6 +182,9 @@
         }
         .save-key-btn:hover { transform: translateY(-1px); }
         .save-key-btn.saved { background: var(--success); }
+        .api-key-status { font-size: 0.8rem; margin-left: 8px; }
+        .api-key-status.configured { color: var(--success); }
+        .api-key-status.not-configured { color: var(--warning); }
 
         /* Chat Area */
         .chat-area {
@@ -402,6 +405,7 @@
                 <div class="api-key-section">
                     <input type="password" class="api-key-input" id="apiKeyInput" placeholder="API Key..." onkeydown="if(event.key==='Enter')saveApiKey()">
                     <button class="save-key-btn" id="saveKeyBtn" onclick="saveApiKey()">Save</button>
+                    <span class="api-key-status" id="apiKeyStatus"></span>
                 </div>
 
                 <button class="icon-btn" onclick="clearChat()" title="Clear Chat">
@@ -568,6 +572,7 @@
                 input.value = '';
                 btn.textContent = 'Saved!';
                 btn.classList.add('saved');
+                updateApiKeyStatus();
                 setTimeout(() => {
                     btn.textContent = 'Save';
                     btn.classList.remove('saved');
@@ -581,6 +586,7 @@
                 tab.classList.toggle('active', tab.dataset.provider === provider);
             });
             updateModelSelect();
+            updateApiKeyStatus();
 
             // Show/hide API key input
             const apiKeySection = document.querySelector('.api-key-section');
@@ -601,6 +607,27 @@
                 modelInfo.textContent = `${PROVIDERS[currentProvider].name}: ${currentModel}`;
             } else {
                 modelInfo.textContent = 'No model selected';
+            }
+            updateApiKeyStatus();
+        }
+
+        function updateApiKeyStatus() {
+            const status = document.getElementById('apiKeyStatus');
+            const provider = PROVIDERS[currentProvider];
+            
+            if (!provider.keyName) {
+                status.textContent = '(No key needed)';
+                status.className = 'api-key-status configured';
+                return;
+            }
+            
+            const hasKey = localStorage.getItem(provider.keyName);
+            if (hasKey) {
+                status.textContent = '✓ Configured';
+                status.className = 'api-key-status configured';
+            } else {
+                status.textContent = '⚠️ Key needed';
+                status.className = 'api-key-status not-configured';
             }
         }
 
@@ -624,7 +651,19 @@
 
         async function sendMessage() {
             const content = chatInput.value.trim();
-            if (!content || !currentModel || isGenerating) return;
+            if (!content || !currentModel || isGenerating) {
+                if (!currentModel) {
+                    showError('Please select a model first. Go to Settings > API Key to configure.');
+                }
+                return;
+            }
+
+            // Check for API key
+            const provider = PROVIDERS[currentProvider];
+            if (provider.keyName && !localStorage.getItem(provider.keyName)) {
+                showError(`Please enter your ${provider.name} API key. Click "Save" next to the API key field.`);
+                return;
+            }
 
             welcomeContainer.classList.add('hidden');
             messagesContainer.classList.remove('hidden');
@@ -652,8 +691,8 @@
                 aiMessage.content = response.content;
             } catch (error) {
                 hideTypingIndicator();
-                showError(error.message || 'Failed to get response');
-                aiMessage.content = 'Sorry, I encountered an error. Please check your API key and try again.';
+                showError(error.message || 'Failed to get response. Please check your API key and try again.');
+                aiMessage.content = `❌ Error: ${error.message}`;
             }
 
             messages.push(aiMessage);
@@ -736,7 +775,7 @@
 
         async function callGemini(userContent, systemPrompt, temperature, maxTokens) {
             const apiKey = localStorage.getItem('GEMINI_API_KEY');
-            if (!apiKey) throw new Error('Please enter your Gemini API key');
+            if (!apiKey) throw new Error('Please enter your Gemini API key. Go to https://aistudio.google.com/apikey');
 
             const conversation = messages.filter(m => m.role !== 'system').map(m => ({
                 role: m.role === 'assistant' ? 'model' : 'user',
@@ -761,11 +800,29 @@
 
             if (!response.ok) {
                 const err = await response.json();
-                throw new Error(err.error?.message || 'API request failed');
+                let errorMsg = 'API request failed';
+                
+                if (err.error) {
+                    if (err.error.message.includes('API key not valid')) {
+                        errorMsg = 'Invalid API Key. Please get a new key from https://aistudio.google.com/apikey';
+                    } else if (err.error.message.includes('quota')) {
+                        errorMsg = 'API quota exceeded. Please try again later or get a new API key.';
+                    } else if (err.error.message.includes('model')) {
+                        errorMsg = `Model "${currentModel}" not available. Please select a different model.`;
+                    } else {
+                        errorMsg = err.error.message;
+                    }
+                }
+                throw new Error(errorMsg);
             }
 
             const data = await response.json();
-            return { content: data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response' };
+            
+            if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+                throw new Error('Invalid response from Gemini. Please try again.');
+            }
+            
+            return { content: data.candidates[0].content.parts[0].text };
         }
 
         async function callOpenAICompatible(userContent, systemPrompt, temperature, maxTokens) {
