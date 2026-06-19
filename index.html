@@ -453,10 +453,10 @@
             gemini: {
                 name: 'Gemini',
                 models: [
-                    'gemini-2.0-flash-exp',
-                    'gemini-1.5-pro', 
                     'gemini-1.5-flash',
-                    'gemini-1.5-flash-8b',
+                    'gemini-1.5-flash-8b', 
+                    'gemini-1.5-pro',
+                    'gemini-2.0-flash',
                     'gemini-pro'
                 ],
                 endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
@@ -745,7 +745,9 @@
 
             const contents = [...conversation, { role: 'user', parts: [{ text: userContent }] }];
 
-            const response = await fetch(`${PROVIDERS.gemini.endpoint}/${currentModel}:generateContent?key=${apiKey}`, {
+            const endpoint = `${PROVIDERS.gemini.endpoint}/${currentModel}:generateContent?key=${apiKey}`;
+
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
