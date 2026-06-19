@@ -385,11 +385,11 @@
 
             <div class="header-controls">
                 <div class="provider-tabs">
-                    <button class="provider-tab active" data-provider="openai" onclick="switchProvider('openai')">OpenAI</button>
-                    <button class="provider-tab" data-provider="anthropic" onclick="switchProvider('anthropic')">Claude</button>
+                    <button class="provider-tab active" data-provider="gemini" onclick="switchProvider('gemini')">Gemini ⭐</button>
                     <button class="provider-tab" data-provider="groq" onclick="switchProvider('groq')">Groq</button>
+                    <button class="provider-tab" data-provider="openai" onclick="switchProvider('openai')">OpenAI</button>
+                    <button class="provider-tab" data-provider="anthropic" onclick="switchProvider('anthropic')">Claude</button>
                     <button class="provider-tab" data-provider="cohere" onclick="switchProvider('cohere')">Cohere</button>
-                    <button class="provider-tab" data-provider="gemini" onclick="switchProvider('gemini')">Gemini</button>
                     <button class="provider-tab" data-provider="ollama" onclick="switchProvider('ollama')">Local</button>
                 </div>
 
@@ -450,6 +450,24 @@
 
         // Provider configurations
         const PROVIDERS = {
+            gemini: {
+                name: 'Gemini',
+                models: [
+                    'gemini-2.0-flash-exp',
+                    'gemini-1.5-pro', 
+                    'gemini-1.5-flash',
+                    'gemini-1.5-flash-8b',
+                    'gemini-pro'
+                ],
+                endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
+                keyName: 'GEMINI_API_KEY'
+            },
+            groq: {
+                name: 'Groq',
+                models: ['llama-3.1-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'gemma2-9b-it'],
+                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+                keyName: 'GROQ_API_KEY'
+            },
             openai: {
                 name: 'OpenAI',
                 models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4', 'gpt-3.5-turbo'],
@@ -462,23 +480,11 @@
                 endpoint: 'https://api.anthropic.com/v1/messages',
                 keyName: 'ANTHROPIC_API_KEY'
             },
-            groq: {
-                name: 'Groq',
-                models: ['llama-3.1-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'gemma2-9b-it'],
-                endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-                keyName: 'GROQ_API_KEY'
-            },
             cohere: {
                 name: 'Cohere',
                 models: ['command-r-plus', 'command-r', 'command', 'command-light'],
                 endpoint: 'https://api.cohere.ai/v1/chat',
                 keyName: 'COHERE_API_KEY'
-            },
-            gemini: {
-                name: 'Gemini',
-                models: ['gemini-2.0-flash-exp', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-pro'],
-                endpoint: 'https://generativelanguage.googleapis.com/v1beta/models',
-                keyName: 'GEMINI_API_KEY'
             },
             ollama: {
                 name: 'Local Ollama',
