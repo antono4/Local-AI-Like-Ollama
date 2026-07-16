@@ -1,5 +1,8 @@
 # NeuralChat - Free AI Chat
 
+> **Created by Antono**
+
+
 A simple, beautiful AI chat interface powered by **Google Gemini** - completely free!
 
 🌐 **Live Demo**: https://antono4.github.io/Local-AI-Like-Ollama/
