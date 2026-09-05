@@ -1,2 +1,26 @@
-Last updated: 2026-09-05 22:33:38 WIB
-Last updated: 2026-09-05 22:35:46 WIB
+# Local-AI-Like-Ollama
+
+
+
+## 📋 Overview
+
+This repository contains **8 files** and is built with the following technologies:
+
+HTML
+
+## 🚀 Quick Start
+
+## ✨ Features
+
+- 📝 Auto-generated documentation
+
+## 🛠️ Technologies
+
+HTML
+
+## 📄 License
+
+MIT License
+
+---
+*Last updated: 2026-09-05 22:45:12 WIB*
